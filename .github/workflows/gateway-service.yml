@@ -1,0 +1,53 @@
+name: API Gateway Service CI/CD
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'api-gateway/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'microsoft'
+
+      - name: Build with Maven
+        run: |
+          cd api-gateway
+          mvn clean package -DskipTests
+
+      - name: Upload artifact for deployment
+        uses: actions/upload-artifact@v3
+        with:
+          name: api-gateway
+          path: api-gateway/target/*.jar
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy.outputs.webapp-url }}
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: api-gateway
+
+      - name: Deploy to Azure Web App
+        id: deploy
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: volunteer-gateway-service
+          publish-profile: ${{ secrets.GATEWAY_PUBLISH_PROFILE }}
+          package: '*.jar'
