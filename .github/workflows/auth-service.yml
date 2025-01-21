@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04  # Pin a specific version to avoid the warning
+    runs-on: ubuntu-22.04  # Pin to a specific version
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -37,8 +37,7 @@ jobs:
     runs-on: ubuntu-22.04
     environment:
       name: 'Production'
-      # Hard-coded or omit the url if it's not needed:
-      # url: 'https://mycoolapp.azurewebsites.net'
+      # Removed the URL reference because azure/webapps-deploy@v2 doesn't provide it
 
     steps:
       - name: Download artifact
