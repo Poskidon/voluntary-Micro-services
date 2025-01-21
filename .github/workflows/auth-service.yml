@@ -34,7 +34,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment:
       name: 'Production'
       url: ${{ steps.deploy.outputs.webapp-url }}
